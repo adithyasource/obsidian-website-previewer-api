@@ -2,33 +2,9 @@ from flask import Flask, jsonify
 from flask import request
 from selenium import webdriver
 from io import BytesIO
-
+from time import sleep
 
 app = Flask(__name__)
-
-
-def take_screenshot(url):
-    options = webdriver.ChromeOptions()
-    options.add_argument("headless")
-    driver = webdriver.Chrome(options=options)
-
-    driver.get(url)
-
-    screenshot = driver.get_screenshot_as_png()
-
-    driver.quit()
-
-    return screenshot
-
-
-def screenshot_to_byte_list(screenshot):
-    # Convert screenshot to byte array
-    screenshot_bytes = BytesIO(screenshot)
-    byte_list = []
-    for byte in screenshot_bytes.getvalue():
-        byte_list.append(byte)
-
-    return byte_list
 
 
 @app.route("/", methods=["GET"])
@@ -39,21 +15,47 @@ def handleMain():
 @app.route("/api", methods=["GET", "POST"])
 def handleScreenshot():
 
-    if request.args.get("url"):
-        url = str(request.args.get("url"))
+    url = str(request.args.get("url"))
+    width = str(request.args.get("width"))
+    height = str(request.args.get("height"))
 
-        screenshot = take_screenshot(url)
-        screenshot_bytes = screenshot_to_byte_list(screenshot)
+    def takeScreenshot(url):
+        options = webdriver.ChromeOptions()
+        options.add_argument("headless")
+        options.add_argument(f"--window-size={width},{height}")
 
-        response = {"img": screenshot_bytes}
+        driver = webdriver.Chrome(options=options)
 
-        response = jsonify(response)
+        driver.get(url)
 
-        response.headers.add(
-            "Access-Control-Allow-Origin",
-            "*",
-        )
-        return response
+        sleep(2)
+
+        screenshot = driver.get_screenshot_as_png()
+
+        driver.quit()
+
+        return screenshot
+
+    def screenshotToBytesList(screenshot):
+        screenshotBytes = BytesIO(screenshot)
+        byteList = []
+        for byte in screenshotBytes.getvalue():
+            byteList.append(byte)
+
+        return byteList
+
+    screenshot = takeScreenshot(url)
+    screenshotBytes = screenshotToBytesList(screenshot)
+
+    response = {"img": screenshotBytes}
+
+    response = jsonify(response)
+
+    response.headers.add(
+        "Access-Control-Allow-Origin",
+        "*",
+    )
+    return response
 
 
 # command to run python -m flask run --debug --port 5002
