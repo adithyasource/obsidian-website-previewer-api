@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask import request
 from selenium import webdriver
 from io import BytesIO
 
@@ -32,26 +33,27 @@ def screenshot_to_byte_list(screenshot):
 
 @app.route("/", methods=["GET"])
 def handleMain():
-    return "hey there, how'd you end up here? this is the main website: https://clear.adithya.zip"
+    return "hey there, how'd you end up here?"
 
 
-@app.route("/api", methods=["GET"])
+@app.route("/api", methods=["GET", "POST"])
 def handleScreenshot():
-    response = "w"
 
-    url = "https://google.com"  # URL of the website to take screenshot
-    screenshot = take_screenshot(url)
-    screenshot_bytes = screenshot_to_byte_list(screenshot)
+    if request.args.get("url"):
+        url = str(request.args.get("url"))
 
-    response = {"img": screenshot_bytes}
+        screenshot = take_screenshot(url)
+        screenshot_bytes = screenshot_to_byte_list(screenshot)
 
-    response = jsonify(response)
+        response = {"img": screenshot_bytes}
 
-    response.headers.add(
-        "Access-Control-Allow-Origin",
-        "*",
-    )
-    return response
+        response = jsonify(response)
+
+        response.headers.add(
+            "Access-Control-Allow-Origin",
+            "*",
+        )
+        return response
 
 
 # command to run python -m flask run --debug --port 5002
