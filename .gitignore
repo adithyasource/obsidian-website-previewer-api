@@ -13,3 +13,4 @@ env.bak/
 venv.bak/ 
 .vercel
 releases
+logs.txt

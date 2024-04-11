@@ -1,1 +1,1 @@
-.\env\Scripts\python.exe -m flask run --debug --port 5002
+.\env\Scripts\python.exe -m flask run --debug --port 5002 

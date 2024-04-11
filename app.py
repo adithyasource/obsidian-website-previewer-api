@@ -1,10 +1,17 @@
 from flask import Flask, jsonify
 from flask import request
 from selenium import webdriver
+from selenium.webdriver.edge.options import Options
 from io import BytesIO
 from time import sleep
 
 app = Flask(__name__)
+
+# ! Uncomment the following code if you want to change the browser from Chrome to Edge
+
+# opt = Options()
+# opt.add_argument("--headless")
+# driver = webdriver.Edge(options=opt)
 
 
 @app.route("/", methods=["GET"])
@@ -20,11 +27,14 @@ def handleScreenshot():
     height = str(request.args.get("height"))
 
     def takeScreenshot(url):
-        options = webdriver.ChromeOptions()
-        options.add_argument("headless")
-        options.add_argument(f"--window-size={width},{height}")
+        opt = Options()
+        opt.add_argument("--headless")
+        opt.add_argument(f"--window-size={width},{height}")
 
-        driver = webdriver.Chrome(options=options)
+        # ! Uncomment the following code if you want to change the browser from Chrome to Edge
+        # driver = webdriver.Edge(options=opt)
+
+        driver = webdriver.Chrome(options=opt)  # ! And comment this one out
 
         driver.get(url)
 
