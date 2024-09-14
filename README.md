@@ -1,5 +1,7 @@
 # obsidian-website-previewer-api
 
+⚠️ DEPRECATED: MIGHT NOT WORK ⚠️
+
 <table>
 <tbody>
 <tr>
